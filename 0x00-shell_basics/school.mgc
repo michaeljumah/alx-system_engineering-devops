@@ -1,0 +1,3 @@
+#!/bin/bash
+0	string SCHOOL file to detect School data files
+!:mime text/SCHOOL
