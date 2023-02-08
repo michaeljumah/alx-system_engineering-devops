@@ -1,2 +1,3 @@
 #!/bin/bash
-file tmp/iamafile \n
+file tmp/iamafile
+\n
