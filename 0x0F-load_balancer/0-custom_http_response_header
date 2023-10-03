@@ -1,55 +1,15 @@
 #!/usr/bin/env bash
-#
-# Configure Nginx so that its HTTP response contains
-# a custom header
-#
-
-# Update the system
+# shellcheck disable=SC2154
+#configures a new Ubuntu machine nginx
 sudo apt-get update
-sudo apt-get upgrade -y
-
-# Install HAProxy
-sudo apt-get install -y haproxy
-
-# Configure HAProxy
-cat <<EOF | sudo tee /etc/haproxy/haproxy.cfg
-global
-    log /dev/log    local0
-    log /dev/log    local1 notice
-    chroot /var/lib/haproxy
-    stats socket /run/haproxy/admin.sock mode 660 level admin expose-fd listeners
-    stats timeout 30s
-    user haproxy
-    group haproxy
-    daemon
-
-defaults
-    log global
-    mode    http
-    option  httplog
-    option  dontlognull
-    timeout connect 5000
-    timeout client  50000
-    timeout server  50000
-
-frontend main
-    bind *:80
-    default_backend web_servers
-
-backend web_servers
-    balance roundrobin
-    server web-01 [STUDENT_ID]-web-01:80 check
-    server web-02 [STUDENT_ID]-web-02:80 check
-EOF
-
-# Restart HAProxy to apply changes
-sudo systemctl restart haproxy
-
-# Enable HAProxy to start on boot
-sudo systemctl enable haproxy
-
-# Ensure HAProxy management via init script
-sudo sed -i 's/ENABLED=0/ENABLED=1/' /etc/default/haproxy
-
-# Restart HAProxy to apply changes
-sudo service haproxy restart
+sudo apt-get install nginx -y
+sudo ufw allow 'Nginx HTTP'
+echo "Holberton School" | sudo tee /var/www/html/index.nginx-debian.html
+new_string="listen 80 default_server;\\n\\tlocation \/redirect_me {\\n\\t\\treturn 301 https:\/\/www.youtube.com\/;\\n\\t}"
+sudo sed -i "s/listen 80 default_server;/$new_string/" /etc/nginx/sites-enabled/default
+echo "Ceci n'est pas une page" | sudo tee /usr/share/nginx/html/404.html
+new_string="listen 80 default_server;\\nerror_page 404 \/404.html;\\n\\tlocation = \/404.html {\\n\\t\\troot \/usr\/share\/nginx\/html;\\n\\t\\tinternal;\\n\\t}"
+sudo sed -i "s/listen 80 default_server;/$new_string/" /etc/nginx/sites-enabled/default
+new_string2="http {\\n\\tadd_header X-Served-By \"$HOSTNAME\";"
+sudo sed -i "s/http {/$new_string2/" /etc/nginx/nginx.conf
+sudo service nginx start
