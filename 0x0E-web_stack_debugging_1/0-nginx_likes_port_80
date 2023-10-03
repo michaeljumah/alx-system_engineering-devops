@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
-# Nginx likes port 80
-cat /etc/nginx/sites-available/default > /etc/nginx/sites-enabled/default
-sudo service nginx restart
+#configure nginx server to listen for port 80
+#this is spam
+#this is spam
+sed -i 's/8080/80/g' /etc/nginx/sites-enabled/default
+service nginx restart
