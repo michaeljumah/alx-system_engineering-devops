@@ -1,35 +1,17 @@
 #!/usr/bin/env bash
-#
-# Configure Nginx so that its HTTP response contains a custom header.
+#configures a new Ubuntu machine nginx
+apt-get update
+apt-get install software-properties-common -y
+add-apt-repository ppa:vbernat/haproxy-1.7 -y
+apt-get update
+apt-get install haproxy=1.7.\* -y
+echo "frontend web-front
+        bind *:80
+        default_backend web-backend
 
-# Update packages
-sudo apt update
-
-# Add HAProxy PPA
-sudo apt install -y software-properties-common
-sudo add-apt-repository ppa:vbernat/haproxy-1.8 -y
-sudo apt update
-
-# Install HAProxy
-sudo apt install -y haproxy=1.8.\*
-
-hgproxy_conf_file="/etc/haproxy/haproxy.cfg"
-
-# Configure Load Balancer
-fname="frontend http"
-fbind="bind *:80"
-fmode="mode http"
-fdefault="default_backend web-backend"
-frontend="$fname\n\t$fbind\n\t$fmode\n\t$fdefault\n"
-
-bname="backend web-backend"
-bbalance="balance roundrobin"
-bserver1="server web1 34.148.28.190:80 check"
-bserver2="server web2 18.207.93.156:80 check"
-backend="$bname\n\t$bbalance\n\t$bserver1\n\t$bserver2"
-
-sudo sed -i "$ a $frontend" $hgproxy_conf_file
-sudo sed -i "$ a $backend" $hgproxy_conf_file
-
-# Restart HAProxy
-sudo service haproxy restart
+backend web-backend
+        balance roundrobin
+        server web1 35.227.47.184:80 check
+        server web2 35.190.188.208:80 check
+" | sudo tee -a /etc/haproxy/haproxy.cfg
+sudo service haproxy start
