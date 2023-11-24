@@ -1,7 +1,5 @@
 #install flask from pip3 using Puppet
 
-# Filename: install_flask.pp
-
 package { 'python3-pip':
   ensure => installed,
 }
