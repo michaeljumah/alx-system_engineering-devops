@@ -5,43 +5,20 @@
 # request, it returns a page that contains the string
 # 'Hello World'.
 
+#!/bin/bash
 
-if [ "$EUID" -ne 0 ]; then
-  echo "Please run this script as root or using sudo."
-  exit 1
-fi
-# Update the package list
-apt update
 # Install Nginx
-apt install -y nginx
-# Check if Nginx installation was successful
-if [ $? -ne 0 ]; then
-  echo "Failed to install Nginx. Exiting."
-  exit 1
-fi
-# Start Nginx (it will automatically listen on port 80)
-/etc/init.d/nginx start
-# Check if Nginx started successfully
-if [ $? -ne 0 ]; then
-  echo "Failed to start Nginx. Exiting."
-  exit 1
-fi
-# Create a simple HTML file with "Hello World!"
-echo '<html><body><h1>Hello World!</h1></body></html>' > /var/www/html/index.html
-# Check if the HTML file was created successfully
-if [ $? -ne 0 ]; then
-  echo "Failed to create the HTML file. Exiting."
-  exit 1
-fi
-# Reload Nginx to apply the configuration
-/etc/init.d/nginx reload
+sudo apt-get update -y
+sudo apt-get install -y nginx
 
-# Check if Nginx reloaded successfully
-if [ $? -ne 0 ]; then
-  echo "Failed to reload Nginx. Exiting."
-  exit 1
-fi
-# Print a success message
-echo "Nginx is installed and configured. You can access it at http://YOUR_SERVER_IP/"
-# Exit the script
-exit 0
+# Ensure Nginx is listening on port 80
+sudo sed -i '/^\s*listen\s\+80;/c\listen 80;' /etc/nginx/sites-available/default
+
+# Restart Nginx (without using systemctl)
+sudo /etc/init.d/nginx restart
+
+# Create a simple HTML page with the required string
+echo "Hello World!" | sudo tee /var/www/html/index.html > /dev/null
+
+# Display a success message
+echo "Nginx installed and configured. Web server is now listening on port 80."
