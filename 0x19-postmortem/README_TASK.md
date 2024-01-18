@@ -1,4 +1,5 @@
 Postmortem: Web Stack Outage
+![postmortem](https://github.com/michaeljumah/alx-system_engineering-devops/assets/43741381/6c6f1682-99f3-4dcf-a6e4-30663e2a212e)
 
 Issue Summary:
 
